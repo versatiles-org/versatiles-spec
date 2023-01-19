@@ -44,7 +44,7 @@ The file is composed of several parts:
 
 - Content of `tiles.json`
 - UTF-8
-- Compressed with Brotli
+- Compressed with `$tile_precompression`
 
 ### `block`
 
