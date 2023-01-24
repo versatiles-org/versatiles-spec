@@ -24,12 +24,12 @@ The file is composed of several parts:
 | 0      | 14     | string | `"versatiles_v01"`        |
 | 14     | 1      | u8     | `tile_format`             |
 | 15     | 1      | u8     | `tile_precompression`     |
-| 16     | 1      | u8     | `min zoom level`          |
-| 17     | 1      | u8     | `max zoom level`          |
-| 18     | 4      | f32    | `bbox min longitude`      |
-| 22     | 4      | f32    | `bbox min latitude`       |
-| 26     | 4      | f32    | `bbox max longitude`      |
-| 30     | 4      | f32    | `bbox max latitude`       |
+| 16     | 1      | u8     | min zoom level            |
+| 17     | 1      | u8     | max zoom level            |
+| 18     | 4      | f32    | bbox min x (longitude)    |
+| 22     | 4      | f32    | bbox min y (latitude)     |
+| 26     | 4      | f32    | bbox max x (longitude)    |
+| 30     | 4      | f32    | bbox max y (latitude)     |
 | 34     | 8      | u64    | `offset` of `meta`        |
 | 42     | 8      | u64    | `length` of `meta`        |
 | 50     | 8      | u64    | `offset` of `block_index` |
