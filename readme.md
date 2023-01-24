@@ -1,10 +1,10 @@
 
 # format
 
-- all integers are stored in big endian byte order
+- all numbers are stored in big endian byte order
 
 The file is composed of several parts:
-1. A **header** with 62 bytes
+1. A **header** with 66 bytes
 2. compressed **metadata** (tiles.json)
 3. several **blocks**, where each block consists of:
    - several **tiles**
@@ -15,25 +15,31 @@ The file is composed of several parts:
 
 ## file
 
-### `file_header` (62 bytes)
+### `file_header` (66 bytes)
 
 - all `offset`s are relative to start of the file
   
-| offset | length | type   | description                      |
-|--------|--------|--------|----------------------------------|
-| 0      | 28     | string | `"OpenCloudTiles-Container-v1:"` |
-| 28     | 1      | u8     | `tile_format`                    |
-| 29     | 1      | u8     | `tile_precompression`            |
-| 30     | 8      | u64    | `offset` of `meta`               |
-| 38     | 8      | u64    | `length` of `meta`               |
-| 46     | 8      | u64    | `offset` of `block_index`        |
-| 54     | 8      | u64    | `length` of `block_index`        |
+| offset | length | type   | description               |
+|--------|--------|--------|---------------------------|
+| 0      | 14     | string | `"versatiles_v01"`        |
+| 14     | 1      | u8     | `tile_format`             |
+| 15     | 1      | u8     | `tile_precompression`     |
+| 16     | 1      | u8     | `min zoom level`          |
+| 17     | 1      | u8     | `max zoom level`          |
+| 18     | 4      | f32    | `bbox min longitude`      |
+| 22     | 4      | f32    | `bbox min latitude`       |
+| 26     | 4      | f32    | `bbox max longitude`      |
+| 30     | 4      | f32    | `bbox max latitude`       |
+| 34     | 8      | u64    | `offset` of `meta`        |
+| 42     | 8      | u64    | `length` of `meta`        |
+| 50     | 8      | u64    | `offset` of `block_index` |
+| 58     | 8      | u64    | `length` of `block_index` |
 
 ### `tile_format` values:
   - `0`: png
   - `1`: jpg
   - `2`: webp
-  - `16`: pbf
+  - `3`: pbf
 
 ### `tile_precompression` values:
   - `0`: uncompressed
@@ -44,7 +50,7 @@ The file is composed of several parts:
 
 - Content of `tiles.json`
 - UTF-8
-- Compressed with `$tile_precompression`
+- compressed with `$tile_precompression`
 
 ### `block`
 
@@ -82,7 +88,7 @@ The file is composed of several parts:
 ### `tile`
 
 - each tile is a PNG/PBF/… file as data blob
-- precompressed with `$tile_precompression`
+- compressed with `$tile_precompression`
 
 ### `tile_index`
 
