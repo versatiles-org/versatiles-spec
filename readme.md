@@ -60,17 +60,17 @@ The file is composed of several parts:
 
 - Brotli compressed data structure
 - Empty `block`s are not stored
-- For each block `block_index` contains a 259 bytes long record:
+- For each block `block_index` contains a 29 bytes long record:
 
 | offset    | length | type | description              |
 |-----------|--------|------|--------------------------|
 | 0 + 29*i  | 1      | u8   | `level`                  |
 | 1 + 29*i  | 4      | u32  | `column`/256             |
 | 5 + 29*i  | 4      | u32  | `row`/256                |
-| 9 + 29*i  | 1      | u8   | `col_min`                |
-| 10 + 29*i | 1      | u8   | `row_min`                |
-| 11 + 29*i | 1      | u8   | `col_max`                |
-| 12 + 29*i | 1      | u8   | `row_max`                |
+| 9 + 29*i  | 1      | u8   | `col_min` (0..255)       |
+| 10 + 29*i | 1      | u8   | `row_min` (0..255)       |
+| 11 + 29*i | 1      | u8   | `col_max` (0..255)       |
+| 12 + 29*i | 1      | u8   | `row_max` (0..255)       |
 | 13 + 29*i | 8      | u64  | `offset` of `tile_index` |
 | 21 + 29*i | 8      | u64  | `length` of `tile_index` |
 
