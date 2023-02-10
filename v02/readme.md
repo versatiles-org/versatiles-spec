@@ -129,7 +129,7 @@ If no metadata is specified, offset and length must be `0`.
 | 12*i+8 | 4      | u32  | length of `tile_blob`            |
 
 
-| `tile_blob`s within `a block`   |
+| index of `tile_blob`s           |
 |:-------------------------------:|
 | ![Block Tiles](block_tiles.svg) |
 
