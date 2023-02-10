@@ -2,7 +2,8 @@
 
 ## Versions
 
-- [**versatiles_v01**](v1/readme.md) <- current version
+- [**v02**](v02/readme.md) <- current version
+- [v01](v01/readme.md)
 
 ## Implementations
 
