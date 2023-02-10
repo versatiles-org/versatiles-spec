@@ -1,5 +1,6 @@
+# Versatiles container format specification V02
 
-# overview
+## overview
 
 - All numbers are stored in big endian byte order.
 - Tiles are organised in the XYZ scheme, and not the TMS scheme. So tiles with x=0,y=0 are in the top left corner.
