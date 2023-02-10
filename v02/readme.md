@@ -19,17 +19,17 @@ The file is composed of four parts:
 - has a length of 66 bytes
 - all offsets are relative to start of the file
   
-| offset | length | type   | description               |
-|--------|--------|--------|---------------------------|
-| 0      | 14     | string | `"versatiles_v02"`        |
-| 14     | 1      | u8     | `tile_format`             |
-| 15     | 1      | u8     | `tile_precompression`     |
-| 16     | 1      | u8     | min zoom level            |
-| 17     | 1      | u8     | max zoom level            |
-| 18     | 4      | f32    | bbox min x (longitude)    |
-| 22     | 4      | f32    | bbox min y (latitude)     |
-| 26     | 4      | f32    | bbox max x (longitude)    |
-| 30     | 4      | f32    | bbox max y (latitude)     |
+| offset | length | type   | description             |
+|--------|--------|--------|-------------------------|
+| 0      | 14     | string | `"versatiles_v02"`      |
+| 14     | 1      | u8     | `tile_format`           |
+| 15     | 1      | u8     | `tile_precompression`   |
+| 16     | 1      | u8     | min zoom level          |
+| 17     | 1      | u8     | max zoom level          |
+| 18     | 4      | f32    | bbox min x (longitude)  |
+| 22     | 4      | f32    | bbox min y (latitude)   |
+| 26     | 4      | f32    | bbox max x (longitude)  |
+| 30     | 4      | f32    | bbox max y (latitude)   |
 | 34     | 8      | u64    | offset of `metadata`    |
 | 42     | 8      | u64    | length of `metadata`    |
 | 50     | 8      | u64    | offset of `block_index` |
@@ -88,8 +88,8 @@ If no metadata is specified, offset and length must be `0`.
 - if a `tile` does not exist, the length of `tile` is `0`
 - offsets of `tile_blob`s are relative to the beginning of the `block`. So the offset of the first `tile_blob` should always be `0`.
 
-| offset | length | type | description                        |
-|--------|--------|------|------------------------------------|
+| offset | length | type | description                      |
+|--------|--------|------|----------------------------------|
 | 12*i   | 8      | u64  | offset of `tile_blob` in `block` |
 | 12*i+8 | 4      | u32  | length of `tile_blob`            |
 
@@ -101,15 +101,15 @@ If no metadata is specified, offset and length must be `0`.
 - Empty `block`s are not stored
 - For each block `block_index` contains a 33 bytes long record:
 
-| offset    | length | type | description                 |
-|-----------|--------|------|-----------------------------|
-| 0 + 33*i  | 1      | u8   | `level`                     |
-| 1 + 33*i  | 4      | u32  | `column`/256                |
-| 5 + 33*i  | 4      | u32  | `row`/256                   |
-| 9 + 33*i  | 1      | u8   | `col_min` (0..255)          |
-| 10 + 33*i | 1      | u8   | `row_min` (0..255)          |
-| 11 + 33*i | 1      | u8   | `col_max` (0..255)          |
-| 12 + 33*i | 1      | u8   | `row_max` (0..255)          |
+| offset    | length | type | description               |
+|-----------|--------|------|---------------------------|
+| 0 + 33*i  | 1      | u8   | `level`                   |
+| 1 + 33*i  | 4      | u32  | `column`/256              |
+| 5 + 33*i  | 4      | u32  | `row`/256                 |
+| 9 + 33*i  | 1      | u8   | `col_min` (0..255)        |
+| 10 + 33*i | 1      | u8   | `row_min` (0..255)        |
+| 11 + 33*i | 1      | u8   | `col_max` (0..255)        |
+| 12 + 33*i | 1      | u8   | `row_max` (0..255)        |
 | 13 + 33*i | 8      | u64  | offset of `block` in file |
 | 21 + 33*i | 8      | u64  | length of `tile_blobs`    |
 | 29 + 33*i | 4      | u32  | length of `tile_index`    |
