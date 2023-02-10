@@ -13,7 +13,9 @@ The file is composed of four parts:
 	- followed by [**`tile_index`**](#tile_index) as an index of these tiles
 4. followed by [**`block_index`**](#block_index) as an index of all blocks
 
-		![File Format](file_format.svg)
+| File Format                     |
+|:-------------------------------:|
+| ![File Format](file_format.svg) |
 
 ## `file_header`
 
@@ -98,7 +100,11 @@ If no metadata is specified, offset and length must be `0`.
 - Levels 0-8 can be stored with one `block` each. Level 9 can contain up to 512×512 `tile`s so up to 4 `block`s are necessary.
 - Number of Blocks: `max(1, pow(2, (level-7))`
 
-		![Level Blocks](block_tiles.svg)
+
+| Level Blocks                     |
+|:--------------------------------:|
+| ![Level Blocks](block_tiles.svg) |
+
 
 - Each `block` contains the concatenated `tile` blobs and ends with a `tile_index`.
 - Neither `tile`s in a `block` nor `block`s in a `file` have to be sorted in any kind of order, as long as their indexes are correct.
@@ -122,7 +128,10 @@ If no metadata is specified, offset and length must be `0`.
 | 12*i   | 8      | u64  | offset of `tile_blob` in `block` |
 | 12*i+8 | 4      | u32  | length of `tile_blob`            |
 
-		![Block Tiles](block_tiles.svg)
+
+| Block Tiles                     |
+|:-------------------------------:|
+| ![Block Tiles](block_tiles.svg) |
 
 
 ### `tile_blob`
