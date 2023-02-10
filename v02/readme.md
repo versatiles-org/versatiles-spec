@@ -58,9 +58,9 @@ The file is composed of four parts:
 ### `tile_precompression`
 
 allowed values:
-	- `0`: uncompressed
-	- `1`: gzip compressed
-	- `2`: brotli compressed
+- `0`: uncompressed
+- `1`: gzip compressed
+- `2`: brotli compressed
 
 
 ## `metadata`
