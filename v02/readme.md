@@ -1,6 +1,6 @@
-# Versatiles container format specification V02
+# Versatiles container format specification v02
 
-## overview
+## Overview
 
 - All numbers are stored in big endian byte order.
 - Tiles are organised in the XYZ scheme, and not the TMS scheme. So tiles with x=0,y=0 are in the top left corner.
@@ -9,11 +9,11 @@ The file is composed of four parts:
 1. starting with a [**`file_header`**](#file_header)
 2. followed by compressed [**`metadata`**](#metadata)
 3. followed by several [**`block`s**](#block), where each block consists of:
-	- concatenated [**`tile`s**](#tile) blobs
+	- concatenated [**`tile_blobs`**](#tile_blobs)
 	- followed by [**`tile_index`**](#tile_index) as an index of these tiles
 4. followed by [**`block_index`**](#block_index) as an index of all blocks
 
-	![File Format](file_format.svg)
+		![File Format](file_format.svg)
 
 ## `file_header`
 
@@ -67,11 +67,13 @@ Content of `tiles.json`. Encoded in UTF-8, compressed with `$tile_precompression
 If no metadata is specified, offset and length must be `0`.
 
 
-## `block_index`
+## Blocks
+
+### `block_index`
 
 - Brotli compressed data structure
 - Empty `block`s are not stored
-- For each block `block_index` contains a 33 bytes long record:
+- For each block, `block_index` contains a 33 bytes long record:
 
 | offset    | length | type | description               |
 |-----------|--------|------|---------------------------|
@@ -96,14 +98,16 @@ If no metadata is specified, offset and length must be `0`.
 - Levels 0-8 can be stored with one `block` each. Level 9 can contain up to 512×512 `tile`s so up to 4 `block`s are necessary.
 - Number of Blocks: `max(1, pow(2, (level-7))`
 
-	![Level Blocks](block_tiles.svg)
+		![Level Blocks](block_tiles.svg)
 
 - Each `block` contains the concatenated `tile` blobs and ends with a `tile_index`.
 - Neither `tile`s in a `block` nor `block`s in a `file` have to be sorted in any kind of order, as long as their indexes are correct.
 - But it is recommended to sort the `tile`s in a `block` in an ascending order (e.g. to improve caching efficiency when reading/converting the whole file).
 
 
-## `tile_index`
+## Tiles
+
+### `tile_index`
 
 - Brotli compressed data structure
 - `tile`s are read horizontally then vertically
@@ -118,7 +122,7 @@ If no metadata is specified, offset and length must be `0`.
 | 12*i   | 8      | u64  | offset of `tile_blob` in `block` |
 | 12*i+8 | 4      | u32  | length of `tile_blob`            |
 
-	![Block Tiles](block_tiles.svg)
+		![Block Tiles](block_tiles.svg)
 
 
 ### `tile_blob`
