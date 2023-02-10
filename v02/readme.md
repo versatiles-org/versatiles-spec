@@ -29,10 +29,10 @@ The file is composed of four parts:
 | 15     | 1      | u8     | `tile_precompression`   |
 | 16     | 1      | u8     | min zoom level          |
 | 17     | 1      | u8     | max zoom level          |
-| 18     | 4      | f32    | bbox min x (longitude)  |
-| 22     | 4      | f32    | bbox min y (latitude)   |
-| 26     | 4      | f32    | bbox max x (longitude)  |
-| 30     | 4      | f32    | bbox max y (latitude)   |
+| 18     | 4      | i32    | bbox min x (10⁷ × lon)  |
+| 22     | 4      | i32    | bbox min y (10⁷ × lat)  |
+| 26     | 4      | i32    | bbox max x (10⁷ × lat)  |
+| 30     | 4      | i32    | bbox max y (10⁷ × lat)  |
 | 34     | 8      | u64    | offset of `metadata`    |
 | 42     | 8      | u64    | length of `metadata`    |
 | 50     | 8      | u64    | offset of `block_index` |
