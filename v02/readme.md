@@ -101,9 +101,9 @@ If no metadata is specified, offset and length must be `0`.
 - Number of Blocks: `max(1, pow(2, (level-7))`
 
 
-| Level Blocks                     |
-|:--------------------------------:|
-| ![Level Blocks](block_tiles.svg) |
+| `block`s per level                |
+|:---------------------------------:|
+| ![Level Blocks](level_blocks.svg) |
 
 
 - Each `block` contains the concatenated `tile` blobs and ends with a `tile_index`.
@@ -129,7 +129,7 @@ If no metadata is specified, offset and length must be `0`.
 | 12*i+8 | 4      | u32  | length of `tile_blob`            |
 
 
-| Block Tiles                     |
+| `tile_blob`s within `a block`   |
 |:-------------------------------:|
 | ![Block Tiles](block_tiles.svg) |
 
