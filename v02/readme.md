@@ -19,21 +19,21 @@ The file is composed of four parts:
 - has a length of 66 bytes
 - all offsets are relative to start of the file
   
-| offset | length | type   | description             |
-|--------|--------|--------|-------------------------|
-| 0      | 14     | string | `"versatiles_v02"`      |
-| 14     | 1      | u8     | `tile_format`           |
-| 15     | 1      | u8     | `tile_precompression`   |
-| 16     | 1      | u8     | min zoom level          |
-| 17     | 1      | u8     | max zoom level          |
-| 18     | 4      | f32    | bbox min x (longitude)  |
-| 22     | 4      | f32    | bbox min y (latitude)   |
-| 26     | 4      | f32    | bbox max x (longitude)  |
-| 30     | 4      | f32    | bbox max y (latitude)   |
-| 34     | 8      | u64    | offset of `metadata`    |
-| 42     | 8      | u64    | length of `metadata`    |
-| 50     | 8      | u64    | offset of `block_index` |
-| 58     | 8      | u64    | length of `block_index` |
+| offset | length | type   | description                    |
+|--------|--------|--------|--------------------------------|
+| 0      | 14     | string | `"versatiles_v02"`             |
+| 14     | 1      | u8     | `tile_format`                  |
+| 15     | 1      | u8     | `tile_precompression`          |
+| 16     | 1      | u8     | min zoom level                 |
+| 17     | 1      | u8     | max zoom level                 |
+| 18     | 4      | i32    | bbox, min x (10<sup>7</sup> &times; longitude) |
+| 22     | 4      | i32    | bbox, min y (10<sup>7</sup> &times; latitude)  |
+| 26     | 4      | i32    | bbox, max x (10<sup>7</sup> &times; longitude) |
+| 30     | 4      | i32    | bbox, max y (10<sup>7</sup> &times; latitude)  |
+| 34     | 8      | u64    | offset of `metadata`           |
+| 42     | 8      | u64    | length of `metadata`           |
+| 50     | 8      | u64    | offset of `block_index`        |
+| 58     | 8      | u64    | length of `block_index`        |
 
 ## `tile_format` values:
 
