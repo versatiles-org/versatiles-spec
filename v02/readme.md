@@ -31,7 +31,7 @@ The file is composed of four parts:
 | 17     | 1      | u8     | max zoom level          |
 | 18     | 4      | i32    | bbox min x (10⁷ × lon)  |
 | 22     | 4      | i32    | bbox min y (10⁷ × lat)  |
-| 26     | 4      | i32    | bbox max x (10⁷ × l)  |
+| 26     | 4      | i32    | bbox max x (10⁷ × lon)  |
 | 30     | 4      | i32    | bbox max y (10⁷ × lat)  |
 | 34     | 8      | u64    | offset of `metadata`    |
 | 42     | 8      | u64    | length of `metadata`    |
