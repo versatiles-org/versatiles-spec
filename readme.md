@@ -1,11 +1,22 @@
-# Specification of the `versatiles` container.
+# Specification of VersaTiles
 
 ## Versions
 
-- [**v02**](v02/readme.md) <- current version
-- [v01](v01/readme.md)
+- [**v2.0**](v02/readme.md) <- current version
+- [v1.0](v01)
 
 ## Implementations
 
-- [versatiles (Rust)](https://github.com/versatiles-org/versatile)
-- [versatiles (Node.js)](https://github.com/yetzt/node-versatiles)
+### Generator
+- …
+
+### Server
+- [server in Rust](https://github.com/versatiles-org/versatiles-rs)
+- [server in Node.js](https://github.com/versatiles-org/node-versatiles-server)
+- [server for Google Cloud Run in Node.js](https://github.com/versatiles-org/node-versatiles-google-cloud)
+
+### Network
+- …
+
+### Frontend
+- multiple frontends are available at [versatiles-org/versatiles-frontend](https://github.com/versatiles-org/versatiles-frontend)
