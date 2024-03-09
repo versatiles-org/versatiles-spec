@@ -1,4 +1,4 @@
-# Specification of the `versatiles` container.
+# Specification of VersaTiles
 
 ## Versions
 
