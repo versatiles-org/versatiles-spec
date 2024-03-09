@@ -2,8 +2,8 @@
 
 ## Versions
 
-- [**v02**](v02/readme.md) ← current version
-- [v01](v01/readme.md)
+- [**v2.0**](v02/readme.md) <- current version
+- [v1.0](v01/container/readme.md)
 
 ## Implementations
 
