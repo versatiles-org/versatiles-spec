@@ -1,50 +1,54 @@
-# VersaTiles stack specification v2.0
+# VersaTiles Stack Specification v2.1
 
-The stack consists of 4 layers:
+This document provides detailed specifications for the VersaTiles stack, a modular framework designed for the creation, hosting, and display of map tiles. The stack is structured into four distinct layers, each dedicated to a specific aspect of tile management and presentation.
 
-- **Generator:** generate tiles
-- **Server:** serves tiles
-- **Network:** handles TLS, caching, ...
-- **Frontend:** provides a frontend, e.g. MapLibre GL JS
+## Stack Layers Overview
 
-## Generator
+- **Generator:** Creates map tiles from geographic data sources such as OpenStreetMap (OSM).
+- **Server:** Manages the storage and distribution of map tiles to clients.
+- **Network:** Enhances security and optimizes performance through load balancing, TLS and caching.
+- **Frontend:** Provides the user interface for map interaction, leveraging libraries like MapLibre GL JS.
 
-generates tiles, e.g. from OSM data.
+## Generator Layer Specifications
 
-**Required**:
-- tiles have to be in a [*.versatiles container](container/readme.md)
-- vector tiles have to be in Shortbread schema
-- containers must provide valid metadata, including correct:
-  - `attribution`
-  - `vector_layers` for vector tiles
+Responsible for tile generation, adhering to defined standards and formats.
 
-**Recommended**:
-- use best possible compression, e.g.:
-  - Brotli compression for vector tiles
-  - webp format for raster tiles
+**Requirements:**
+- Tiles must be packaged in a [*.versatiles containers](container/readme.md).
+- Vector tiles must conform to the [Shortbread schema](https://shortbread-tiles.org/).
+- Containers must include detailed metadata compliant with [TileJSON 3.0.0](https://github.com/mapbox/tilejson-spec/tree/master/3.0.0), specifically:
+  - `attribution` detailing source data copyrights.
+  - `vector_layers` describing the vector tiles' layered composition.
 
-## Server
+**Recommendations:**
+- Use optimal compression techniques to efficiently reduce tile size without compromising data integrity. Recommended methods include:
+  - Brotli compression for vector tiles.
+  - WebP format for raster tiles to improve loading efficiency and reduce bandwidth.
 
-**Required**:
-- must read [*.versatiles containers](container/readme.md)
-- must know it's public URL
-- must serve HTTP
-- must serve the following folder structure:
-  - `/tiles/` - folder for serving tiles and metadata 
-    - `/tiles/sources.json`
-    - `/tiles/{name}/{z}/{x}/{y}`
-    - `/tiles/{name}/tiles.json` - valid [TileJSON 3.0.0](https://github.com/mapbox/tilejson-spec/tree/master/3.0.0)
-  - `/assets/`
+## Server Layer Specifications
+
+The Server layer is responsible for serving map tiles via HTTP.
+
+**Requirements:**
+- Must recognize and process [*VersaTiles containers*](container/readme.md).
+- Requires knowledge of its public URL for resource referencing.
+- Mandatory HTTP service provision.
+- Adopts a structured folder hierarchy for organized tile and metadata access:
+  - `/tiles/`: Central directory for tile retrieval.
+    - `/tiles/sources.json`: Comprehensive index of available tile sources.
+    - `/tiles/{name}/{z}/{x}/{y}`: Standardized tile access endpoints.
+    - `/tiles/{name}/tiles.json`: Incorporates a legitimate [TileJSON 3.0.0](https://github.com/mapbox/tilejson-spec/tree/master/3.0.0) document.
+  - `/assets/`: Storage for additional resources like sprites, glyphs, styles, and MapLibre GL JS files.
     - `/assets/sprites/`
     - `/assets/glyphs/`
-      - `/assets/glyphs/{name}` - glyphs, font names must only contain letters, numbers and underscore
-      - `/assets/glyphs/fonts.json` - list of available fonts
+      - `/assets/glyphs/{name}`: Font names must only contain letters, numbers and underscore
+      - `/assets/glyphs/fonts.json`: Index of available fonts.
     - `/assets/styles/`
-    - `/assets/maplibre/maplibre.*` - JavaScript and CSS of newest MapLibre GL JS
+    - `/assets/maplibre/maplibre.*`: JavaScript and CSS of newest MapLibre GL JS
 
-**Recommended**:
-- can handle CORS requests
-- should handle the following config.yaml:
+**Recommendations:**
+- Implementation of Cross-Origin Resource Sharing (CORS) to facilitate resource sharing across different domains.
+- Configurability via `config.yaml` for custom server setup, including domain configuration, IP/port listening preferences, operational modes (e.g., development vs. production), tile source definition, and static content management:
 	```yaml
 	# public URL
 	domain: 'https://example.org' # required
@@ -67,16 +71,21 @@ generates tiles, e.g. from OSM data.
 	- { source: './frontend.tar' }
 	```
 
-## Network
+## Network Layer Specifications
 
-**Required**:
-- proxy valid requests to the server
+The Network layer ensures security and performance.
 
-**Recommended**:
-- provide TLS
-- handle caching
+**Requirements:**
+- Efficient request routing to the Server layer.
+- Minimal routing of duplicated requests.
 
-## Frontend
+**Recommendations:**
+- Implementation of Transport Layer Security (TLS) to encrypt data in transit.
+- Effective caching strategies to reduce load times and server strain for frequently accessed tiles.
 
-**Required**:
-- handle vector and images tiles
+## Frontend Layer Specifications
+
+The Frontend layer is the user interface that renders and interacts with the tiles.
+
+**Requirements:**
+- Must ensure compatibility with both vector and raster tiles.
