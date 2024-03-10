@@ -1,21 +1,38 @@
 # Versatiles Container Format Specification v2.0
 
-## 1. Overview
+## Contents
+- [Versatiles Container Format Specification v2.0](#versatiles-container-format-specification-v20)
+	- [Contents](#contents)
+	- [1. Introduction](#1-introduction)
+	- [2. General Guidelines](#2-general-guidelines)
+	- [3. File structure](#3-file-structure)
+		- [3.1. File Header](#31-file-header)
+			- [3.1.1. Value `tile_format`](#311-value-tile_format)
+			- [3.1.2. Value `precompression`](#312-value-precompression)
+		- [3.2. Metadata Chunk](#32-metadata-chunk)
+		- [3.3. Blocks](#33-blocks)
+			- [3.3.1. Tile Blobs](#331-tile-blobs)
+			- [3.3.2. Tile Index](#332-tile-index)
+		- [3.4. Block Index](#34-block-index)
+	- [4. Glossary](#4-glossary)
 
-- All numbers shall be stored in big endian byte order.
-- Tiles are organised in XYZ scheme (not in TMS scheme). So tiles with x=0, y=0 are in the top left (north west) corner.
+## 1. Introduction
 
+This document defines the Versatiles Container Format v2.0, which describes the structure and encoding mechanisms for efficiently storing large numbers of map tiles.
 
+## 2. General Guidelines
 
-## 2. Container Format
+- **Byte order:** All numeric values are encoded in big-endian byte order.
+- **Tile organization:** Tiles are organised according to the XYZ scheme, with the origin (x=0, y=0) located at the top-left (northwest) corner.
 
-The file is composed of four parts:
-1. starting with a [**`file_header`**](#21-chunk-file_header)
-2. followed by compressed [**`metadata`**](#22-chunk-metadata)
-3. followed by several [**`block`s**](#23-multiple-chunks-block), where each block consists of:
-	- concatenated [**`tile_blobs`**](#231-multiple-tile_blobs)
-	- followed by [**`tile_index`**](#232-tile_index) as an index of these tiles
-4. followed by [**`block_index`**](#24-chunk-block_index) as an index of all blocks
+## 3. File structure
+
+The Versatiles Container format consists of four main components:
+
+1. **[File Header](#31-file-header):** Introduces the file, details global properties, and indicates the locations of [Metadata](#32-metadata-chunk) and [Block Index](#34-block-index).
+2. **[Metadata](#32-metadata-chunk):** Provides detailed information about the tileset, including attribution and layer definitions.
+3. **[Blocks](#33-blocks):** Aggregates tiles into larger units (Blocks) for efficient storage and access, each containing [**Tile Blobs**](#331-tile-blobs) and [**Tile Index**](#332-tile-index).
+4. **[Block Index](#34-block-index):** Acts as a parent directory for all blocks within the file.
 
 |           File Format           |
 |:-------------------------------:|
@@ -23,32 +40,34 @@ The file is composed of four parts:
 
 
 
-### 2.1. Chunk: `file_header`
+### 3.1. File Header
 
-- has a length of 66 bytes
+- **Length:** 66 bytes.
+- **Location:** At the start of the file.
+- **Purpose:** Outlines essential file properties and indicates subsequent section locations.
 - all offsets are relative to start of the file
 
-| offset | length | type   | description             |
-|--------|--------|--------|-------------------------|
-| 0      | 14     | string | `"versatiles_v02"`      |
-| 14     | 1      | u8     | `tile_format`           |
-| 15     | 1      | u8     | `precompression`        |
-| 16     | 1      | u8     | min zoom level          |
-| 17     | 1      | u8     | max zoom level          |
-| 18     | 4      | i32    | bbox min x (10⁷ × lon)  |
-| 22     | 4      | i32    | bbox min y (10⁷ × lat)  |
-| 26     | 4      | i32    | bbox max x (10⁷ × lon)  |
-| 30     | 4      | i32    | bbox max y (10⁷ × lat)  |
-| 34     | 8      | u64    | offset of `metadata`    |
-| 42     | 8      | u64    | length of `metadata`    |
-| 50     | 8      | u64    | offset of `block_index` |
-| 58     | 8      | u64    | length of `block_index` |
+| Offset | Length | Type   | Description                              |
+|--------|--------|--------|------------------------------------------|
+| 0      | 14     | string | File identifier (`"versatiles_v02"`)     |
+| 14     | 1      | u8     | `tile_format` value                      |
+| 15     | 1      | u8     | `precompression` value                   |
+| 16     | 1      | u8     | minimum zoom level                       |
+| 17     | 1      | u8     | maximum zoom level                       |
+| 18     | 4      | i32    | bbox min x (10⁷ × lon)                   |
+| 22     | 4      | i32    | bbox min y (10⁷ × lat)                   |
+| 26     | 4      | i32    | bbox max x (10⁷ × lon)                   |
+| 30     | 4      | i32    | bbox max y (10⁷ × lat)                   |
+| 34     | 8      | u64    | offset of [Metadata](#32-metadata-chunk) |
+| 42     | 8      | u64    | length of [Metadata](#32-metadata-chunk) |
+| 50     | 8      | u64    | offset of [Block Index](#34-block-index)                    |
+| 58     | 8      | u64    | length of [Block Index](#34-block-index)                    |
 
 
 
-#### 2.1.1. Value `tile_format`
+#### 3.1.1. Value `tile_format`
 
-| value  | type     | mime                       |
+| Value  | Type     | Mime                       |
 |--------|----------|----------------------------|
 | `0x00` | bin      | *application/octet-stream* |
 | `0x10` | png      | *image/png*                |
@@ -63,90 +82,100 @@ The file is composed of four parts:
 
 
 
-#### 2.1.2. Value: `precompression`
+#### 3.1.2. Value `precompression`
 
-Metadata and all tiles are precompressed with:
-- `0`: uncompressed
-- `1`: gzip compressed
-- `2`: brotli compressed
+[Metadata](#32-metadata-chunk) and all [Tile Blobs](#331-tile-blobs) are pre-compressed with:
 
-
-
-### 2.2. Chunk: `metadata`
-
-- content of `tiles.json`
-- encoded in UTF-8
-- compressed with `$precompression`
-- If no metadata is specified, offset and length must be `0`.
+| Value | Method       |
+|-------|--------------|
+| `0`   | Uncompressed |
+| `1`   | GZIP         |
+| `2`   | Brotli       |
 
 
 
-### 2.4. Multiple chunks: `block`
+### 3.2. Metadata Chunk
 
-- Each `block` is like a "super tile" and contains data of up to 256×256 (= 65536) `tile`s.
-- Levels 0-8 can be stored with one `block` each. Level 9 can contain up to 512×512 `tile`s so up to 4 `block`s are necessary.
-- Number of blocks: `max(1, pow(2, (level-7))`
+- **Content:** Encapsulates `tiles.json`, detailing tileset metadata.
+- **Encoding:** UTF-8.
+- **Compression:** Defined by the [`precompression`](#312-value-precompression) flag in the [File Header](#31-file-header).
+- **Note:** The absence of Metadata is indicated by zero offsets and lengths in the [File Header](#31-file-header).
 
-|        `block`s per level         |
+
+
+### 3.3. Blocks
+
+- **Structure:** Blocks act as aggregators for up to 256×256 tiles.
+- **Zoom Levels:** Single Blocks can span entire zoom levels (0-8). Higher zoom levels (>8) may require multiple Blocks.
+- Maximum number of Blocks per zoom level: `pow(4, max(0, level - 8))`.
+
+|         Blocks per level          |
 |:---------------------------------:|
 | ![Level Blocks](level_blocks.svg) |
 
-- Each `block` contains concatenated `tile` blobs and ends with a `tile_index`.
-- Neither `tile`s in a `block` nor `block`s in a `file` have to be sorted in any kind of order, as long as their indexes are correct.
+- Each Block contains concatenated [Tile Blobs](#331-tile-blobs) and ends with a [Tile Index](#332-tile-index).
+- Neither the [Tile Blobs](#331-tile-blobs) in a Block nor Blocks in the file need to follow any particular order.
 
 
 
-#### 2.3.1. Multiple `tile_blob`
+#### 3.3.1. Tile Blobs
 
-- each tile is a PNG/PBF/... file as data blob
-- compressed with `$precompression`
+- Tile Blobs are concatenated binary data, each containing one tile. All tiles have the same format and are pre-compressed.
+- **Format:** Each Tile Blob has the same file format, determined by the [`tile_format`](#311-value-tile_format) code in the [File Header](#31-file-header).
+- **Compression:** Each Tile Blob is compressed as specified by the [`precompression`](#312-value-precompression) flag in the [File Header](#31-file-header).
 
 
 
-#### 2.3.2. `tile_index`
+#### 3.3.2. Tile Index
 
-- Brotli compressed data structure
-- Tiles are read horizontally then vertically
+- **Compression:** Brotli.
+- **Purpose:** Maps coordinates of tiles within a block to their respective binary position and length.
+- Tiles are ordered horizontally then vertically
 - `index = (row - row_min) * (col_max - col_min + 1) + (col - col_min)`
-- (`col_min`, `row_min`, `col_max`, `row_max` are specified in `block_index`)
-- identical `tile_blob`s can be stored once and referenced multiple times to save storage space
-- if a tile does not exist, the length of `tile_blob` is `0`
-- offsets of `tile_blob`s are relative to the beginning of the `block`. So the offset of the first `tile_blob` should always be `0`.
+- (`col_min`, `row_min`, `col_max`, `row_max` are specified in [Block Index](#34-block-index))
+- identical [Tile Blobs](#331-tile-blobs) can be stored once and referenced multiple times to save storage space
+- if a tile does not exist, the length of Tile Blob is `0`
+- offsets of [Tile Blobs](#331-tile-blobs) are relative to the beginning of the Block. So the offset of the first Tile Blob should always be `0`.
 
-| offset | length | type | description                      |
-|--------|--------|------|----------------------------------|
-| 12*i   | 8      | u64  | offset of `tile_blob` in `block` |
-| 12*i+8 | 4      | u32  | length of `tile_blob`            |
+| Offset | Length | Type | Description                  |
+|--------|--------|------|------------------------------|
+| 12*i   | 8      | u64  | offset of Tile Blob in Block |
+| 12*i+8 | 4      | u32  | length of Tile Blob          |
 
-|      index of `tile_blob`s      |
+|       index of Tile Blobs       |
 |:-------------------------------:|
 | ![Block Tiles](block_tiles.svg) |
 
 
 
-### 2.4. Chunk: `block_index`
+### 3.4. Block Index
 
-- Brotli compressed data structure
-- Empty `block`s are not stored
-- For each block, `block_index` contains a 33 bytes long record:
+- **Compression:** Brotli.
+- **Function:** Provides a directory for locating [Blocks](#33-blocks) within the container file.
+- Empty Blocks are not stored.
+- Each 33-byte entry within the Block Index is structured as follows:
 
-| offset    | length | type | description               |
-|-----------|--------|------|---------------------------|
-| 0 + 33*i  | 1      | u8   | `level`                   |
-| 1 + 33*i  | 4      | u32  | `column`/256              |
-| 5 + 33*i  | 4      | u32  | `row`/256                 |
-| 9 + 33*i  | 1      | u8   | `col_min` (0..255)        |
-| 10 + 33*i | 1      | u8   | `row_min` (0..255)        |
-| 11 + 33*i | 1      | u8   | `col_max` (0..255)        |
-| 12 + 33*i | 1      | u8   | `row_max` (0..255)        |
-| 13 + 33*i | 8      | u64  | offset of `block` in file |
-| 21 + 33*i | 8      | u64  | length of `tile_blobs`    |
-| 29 + 33*i | 4      | u32  | length of `tile_index`    |
+| Offset    | Length | Type | Description                             |
+|-----------|--------|------|-----------------------------------------|
+| 0 + 33*i  | 1      | u8   | `level`                                 |
+| 1 + 33*i  | 4      | u32  | `column`/256                            |
+| 5 + 33*i  | 4      | u32  | `row`/256                               |
+| 9 + 33*i  | 1      | u8   | `col_min` (0..255)                      |
+| 10 + 33*i | 1      | u8   | `row_min` (0..255)                      |
+| 11 + 33*i | 1      | u8   | `col_max` (0..255)                      |
+| 12 + 33*i | 1      | u8   | `row_max` (0..255)                      |
+| 13 + 33*i | 8      | u64  | offset of Block in file                 |
+| 21 + 33*i | 8      | u64  | length of [Tile Blobs](#331-tile-blobs) |
+| 29 + 33*i | 4      | u32  | length of [Tile Index](#332-tile-index)                    |
 
-- Since a `block` only consists of `tile_blobs` appended by `tile_index`, the length of `block` must be the sum of the lengths of `tile_blobs` and `tile_index`.
-- Note: To efficiently find the `block` that contains the `tile` you are looking for, use a data structure such as a "map", "dictionary" or "associative array" and fill it with the data from the `block_index`.
+- Since a Block consists only of [Tile Blobs](#331-tile-blobs) appended by the [Tile Index](#332-tile-index), the length of Block must be the sum of the lengths of the [Tile Blobs](#331-tile-blobs) and the [Tile Index](#332-tile-index).
+- Note: To efficiently find the Block containing the tile you are looking for, use a data structure such as a "map", "dictionary" or "associative array" and fill it with the data from the Block Index.
 
 
 
-## 3. Glossary
+## 4. Glossary
 
+- **Blob:** A chunk of binary data. [Object storage on Wikipedia](https://en.wikipedia.org/wiki/Object_storage)
+- **Block:** A composite unit containing up to 256×256 tiles.
+- **Brotli:** A compression algorithm known for its efficiency and performance. It offers better compression than GZIP. [Brotli on Wikipedia](https://en.wikipedia.org/wiki/Brotli)
+- **Tile:** A square geographic area at a specified zoom level, containing map information as an image or as vector data.
