@@ -1,4 +1,4 @@
-# VersaTiles Stack Specification v2.1
+# VersaTiles Stack Specification v2.0
 
 This document provides detailed specifications for the VersaTiles stack, a modular framework designed for the creation, hosting, and display of map tiles. The stack is structured into four distinct layers, each dedicated to a specific aspect of tile management and presentation.
 

@@ -1,23 +1,29 @@
-# Versatiles container format specification v02
+# Versatiles Container Format Specification v2.0
 
-## Overview
+## 1. Overview
 
-- All numbers are stored in big endian byte order.
-- Tiles are organised in the XYZ scheme, and not the TMS scheme. So tiles with x=0,y=0 are in the top left corner.
+- All numbers shall be stored in big endian byte order.
+- Tiles are organised in XYZ scheme (not in TMS scheme). So tiles with x=0, y=0 are in the top left (north west) corner.
+
+
+
+## 2. Container Format
 
 The file is composed of four parts:
-1. starting with a [**`file_header`**](#file_header)
-2. followed by compressed [**`metadata`**](#metadata)
-3. followed by several [**`block`s**](#block), where each block consists of:
-	- concatenated [**`tile_blobs`**](#tile_blobs)
-	- followed by [**`tile_index`**](#tile_index) as an index of these tiles
-4. followed by [**`block_index`**](#block_index) as an index of all blocks
+1. starting with a [**`file_header`**](#21-chunk-file_header)
+2. followed by compressed [**`metadata`**](#22-chunk-metadata)
+3. followed by several [**`block`s**](#23-multiple-chunks-block), where each block consists of:
+	- concatenated [**`tile_blobs`**](#231-multiple-tile_blobs)
+	- followed by [**`tile_index`**](#232-tile_index) as an index of these tiles
+4. followed by [**`block_index`**](#24-chunk-block_index) as an index of all blocks
 
-| File Format                     |
+|           File Format           |
 |:-------------------------------:|
 | ![File Format](file_format.svg) |
 
-## `file_header`
+
+
+### 2.1. Chunk: `file_header`
 
 - has a length of 66 bytes
 - all offsets are relative to start of the file
@@ -26,7 +32,7 @@ The file is composed of four parts:
 |--------|--------|--------|-------------------------|
 | 0      | 14     | string | `"versatiles_v02"`      |
 | 14     | 1      | u8     | `tile_format`           |
-| 15     | 1      | u8     | `tile_precompression`   |
+| 15     | 1      | u8     | `precompression`        |
 | 16     | 1      | u8     | min zoom level          |
 | 17     | 1      | u8     | max zoom level          |
 | 18     | 4      | i32    | bbox min x (10⁷ × lon)  |
@@ -39,7 +45,8 @@ The file is composed of four parts:
 | 58     | 8      | u64    | length of `block_index` |
 
 
-### `tile_format` values:
+
+#### 2.1.1. Value `tile_format`
 
 | value  | type     | mime                       |
 |--------|----------|----------------------------|
@@ -55,23 +62,69 @@ The file is composed of four parts:
 | `0x23` | json     | *application/json*         |
 
 
-### `tile_precompression`
 
-allowed values:
+#### 2.1.2. Value: `precompression`
+
+Metadata and all tiles are precompressed with:
 - `0`: uncompressed
 - `1`: gzip compressed
 - `2`: brotli compressed
 
 
-## `metadata`
 
-Content of `tiles.json`. Encoded in UTF-8, compressed with `$tile_precompression`.
-If no metadata is specified, offset and length must be `0`.
+### 2.2. Chunk: `metadata`
+
+- content of `tiles.json`
+- encoded in UTF-8
+- compressed with `$precompression`
+- If no metadata is specified, offset and length must be `0`.
 
 
-## Blocks
 
-### `block_index`
+### 2.4. Multiple chunks: `block`
+
+- Each `block` is like a "super tile" and contains data of up to 256×256 (= 65536) `tile`s.
+- Levels 0-8 can be stored with one `block` each. Level 9 can contain up to 512×512 `tile`s so up to 4 `block`s are necessary.
+- Number of blocks: `max(1, pow(2, (level-7))`
+
+|        `block`s per level         |
+|:---------------------------------:|
+| ![Level Blocks](level_blocks.svg) |
+
+- Each `block` contains concatenated `tile` blobs and ends with a `tile_index`.
+- Neither `tile`s in a `block` nor `block`s in a `file` have to be sorted in any kind of order, as long as their indexes are correct.
+
+
+
+#### 2.3.1. Multiple `tile_blob`
+
+- each tile is a PNG/PBF/... file as data blob
+- compressed with `$precompression`
+
+
+
+#### 2.3.2. `tile_index`
+
+- Brotli compressed data structure
+- Tiles are read horizontally then vertically
+- `index = (row - row_min) * (col_max - col_min + 1) + (col - col_min)`
+- (`col_min`, `row_min`, `col_max`, `row_max` are specified in `block_index`)
+- identical `tile_blob`s can be stored once and referenced multiple times to save storage space
+- if a tile does not exist, the length of `tile_blob` is `0`
+- offsets of `tile_blob`s are relative to the beginning of the `block`. So the offset of the first `tile_blob` should always be `0`.
+
+| offset | length | type | description                      |
+|--------|--------|------|----------------------------------|
+| 12*i   | 8      | u64  | offset of `tile_blob` in `block` |
+| 12*i+8 | 4      | u32  | length of `tile_blob`            |
+
+|      index of `tile_blob`s      |
+|:-------------------------------:|
+| ![Block Tiles](block_tiles.svg) |
+
+
+
+### 2.4. Chunk: `block_index`
 
 - Brotli compressed data structure
 - Empty `block`s are not stored
@@ -94,47 +147,6 @@ If no metadata is specified, offset and length must be `0`.
 - Note: To efficiently find the `block` that contains the `tile` you are looking for, use a data structure such as a "map", "dictionary" or "associative array" and fill it with the data from the `block_index`.
 
 
-### `block`
 
-- Each `block` is like a "super tile" and contains data of up to 256×256 (= 65536) `tile`s.
-- Levels 0-8 can be stored with one `block` each. Level 9 can contain up to 512×512 `tile`s so up to 4 `block`s are necessary.
-- Number of Blocks: `max(1, pow(2, (level-7))`
+## 3. Glossary
 
-
-| `block`s per level                |
-|:---------------------------------:|
-| ![Level Blocks](level_blocks.svg) |
-
-
-- Each `block` contains the concatenated `tile` blobs and ends with a `tile_index`.
-- Neither `tile`s in a `block` nor `block`s in a `file` have to be sorted in any kind of order, as long as their indexes are correct.
-- But it is recommended to sort the `tile`s in a `block` in an ascending order (e.g. to improve caching efficiency when reading/converting the whole file).
-
-
-## Tiles
-
-### `tile_index`
-
-- Brotli compressed data structure
-- `tile`s are read horizontally then vertically
-- `index = (row - row_min)*(col_max - col_min + 1) + (col - col_min)`
-- (`col_min`, `row_min`, `col_max`, `row_max` are specified in `block_index`)
-- identical `tile`s can be stored once and referenced multiple times to save storage space
-- if a `tile` does not exist, the length of `tile` is `0`
-- offsets of `tile_blob`s are relative to the beginning of the `block`. So the offset of the first `tile_blob` should always be `0`.
-
-| offset | length | type | description                      |
-|--------|--------|------|----------------------------------|
-| 12*i   | 8      | u64  | offset of `tile_blob` in `block` |
-| 12*i+8 | 4      | u32  | length of `tile_blob`            |
-
-
-| index of `tile_blob`s           |
-|:-------------------------------:|
-| ![Block Tiles](block_tiles.svg) |
-
-
-### `tile_blob`
-
-- each tile is a PNG/PBF/... file as data blob
-- compressed with `$tile_precompression`
