@@ -60,8 +60,8 @@ The Versatiles Container format consists of four main components:
 | 30     | 4      | i32    | bbox max y (10⁷ × lat)                   |
 | 34     | 8      | u64    | offset of [Metadata](#32-metadata-chunk) |
 | 42     | 8      | u64    | length of [Metadata](#32-metadata-chunk) |
-| 50     | 8      | u64    | offset of [Block Index](#34-block-index)                    |
-| 58     | 8      | u64    | length of [Block Index](#34-block-index)                    |
+| 50     | 8      | u64    | offset of [Block Index](#34-block-index) |
+| 58     | 8      | u64    | length of [Block Index](#34-block-index) |
 
 
 
@@ -166,7 +166,7 @@ The Versatiles Container format consists of four main components:
 | 12 + 33*i | 1      | u8   | `row_max` (0..255)                      |
 | 13 + 33*i | 8      | u64  | offset of Block in file                 |
 | 21 + 33*i | 8      | u64  | length of [Tile Blobs](#331-tile-blobs) |
-| 29 + 33*i | 4      | u32  | length of [Tile Index](#332-tile-index)                    |
+| 29 + 33*i | 4      | u32  | length of [Tile Index](#332-tile-index) |
 
 - Since a Block consists only of [Tile Blobs](#331-tile-blobs) appended by the [Tile Index](#332-tile-index), the length of Block must be the sum of the lengths of the [Tile Blobs](#331-tile-blobs) and the [Tile Index](#332-tile-index).
 - Note: To efficiently find the Block containing the tile you are looking for, use a data structure such as a "map", "dictionary" or "associative array" and fill it with the data from the Block Index.
