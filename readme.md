@@ -7,6 +7,6 @@
 
 ## Implementations
 
-- [versatiles (Rust)](https://github.com/versatiles-org/versatile)
-- [@versatile/container (Node ESM)](https://github.com/versatiles-org/node-versatiles-container)
-- [versatiles (Node CJS)](https://github.com/yetzt/node-versatiles)
+- VersaTiles (Rust) [Repo](https://github.com/versatiles-org/versatiles-rs), [library crate](https://crates.io/crates/versatiles-lib)
+- VersaTiles (Node ESM) [Repo](https://github.com/versatiles-org/node-versatiles-container), [npm package](https://www.npmjs.com/package/@versatiles/container)
+- VersaTiles (Node CJS) [Repo](https://github.com/yetzt/node-versatiles)
