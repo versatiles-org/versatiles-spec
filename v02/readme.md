@@ -8,7 +8,7 @@
 The file is composed of four parts:
 1. starting with a [**`file_header`**](#file_header)
 2. followed by compressed [**`metadata`**](#metadata)
-3. followed by several [**`block`s**](#block), where each block consists of:
+3. followed by several [**`block`**](#block)s, where each block consists of:
 	- concatenated [**`tile_blobs`**](#tile_blobs)
 	- followed by [**`tile_index`**](#tile_index) as an index of these tiles
 4. followed by [**`block_index`**](#block_index) as an index of all blocks
