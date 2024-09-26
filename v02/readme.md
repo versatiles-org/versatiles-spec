@@ -54,15 +54,15 @@ The Versatiles Container format consists of four main components:
 | Value hex | Value dec |   Type   | Mime                       |
 |----------:|----------:|:--------:|----------------------------|
 |    `0x00` |       `0` |   bin    | *application/octet-stream* |
-|    `0x10` |       `8` |   png    | *image/png*                |
-|    `0x11` |       `9` |   jpg    | *image/jpeg*               |
-|    `0x12` |      `10` |   webp   | *image/webp*               |
-|    `0x13` |      `11` |   avif   | *image/avif*               |
-|    `0x14` |      `12` |   svg    | *image/svg+xml*            |
-|    `0x20` |      `16` |   pbf    | *application/x-protobuf*   |
-|    `0x21` |      `17` | geojson  | *application/geo+json*     |
-|    `0x22` |      `18` | topojson | *application/topo+json*    |
-|    `0x23` |      `19` |   json   | *application/json*         |
+|    `0x10` |      `16` |   png    | *image/png*                |
+|    `0x11` |      `17` |   jpg    | *image/jpeg*               |
+|    `0x12` |      `18` |   webp   | *image/webp*               |
+|    `0x13` |      `19` |   avif   | *image/avif*               |
+|    `0x14` |      `20` |   svg    | *image/svg+xml*            |
+|    `0x20` |      `32` |   pbf    | *application/x-protobuf*   |
+|    `0x21` |      `33` | geojson  | *application/geo+json*     |
+|    `0x22` |      `34` | topojson | *application/topo+json*    |
+|    `0x23` |      `35` |   json   | *application/json*         |
 
 
 
