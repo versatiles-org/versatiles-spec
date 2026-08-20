@@ -1,19 +1,20 @@
-# Versatiles Container Format Specification v2.0
+# VersaTiles Container Format Specification v2.0
 
 ## 1. Introduction
 
-This document defines the Versatiles Container Format v2.0, which describes the structure and encoding mechanisms for efficiently storing large numbers of map tiles.
+This document defines the VersaTiles Container Format v2.0, which describes the structure and encoding mechanisms for efficiently storing large numbers of map tiles.
 
 ## 2. General Guidelines
 
 - **Byte order:** All numeric values are encoded in big-endian byte order.
-- **Tile organization:** Tiles are organised according to the XYZ scheme, with the origin (x=0, y=0) located at the top-left (northwest) corner.
+- **Tile organisation:** Tiles are organised according to the XYZ scheme, with the origin (x=0, y=0) at the top left (northwest) corner.
+- **Unknown values:** Values not listed in this specification are reserved for future versions. A reader encountering a reserved value must reject the container. It must not substitute a default, and it must not pass the affected data through unchanged.
 
-## 3. File structure
+## 3. File Structure
 
-The Versatiles Container format consists of four main components:
+The VersaTiles container format consists of four main components:
 
-1. **[File Header](#31-file-header):** Introduces the container file, details global properties, and indicates the locations of [Metadata](#32-metadata-chunk) and [Block Index](#34-block-index).
+1. **[File Header](#31-file-header):** Introduces the container file, details its global properties, and indicates the locations of the [Metadata](#32-metadata-chunk) and [Block Index](#34-block-index).
 2. **[Metadata](#32-metadata-chunk):** Provides detailed information about the tileset, including attribution and layer definitions.
 3. **[Blocks](#33-blocks):** Aggregates tiles into larger units (Blocks) for efficient storage and access, each containing [**Tile Blobs**](#331-tile-blobs) and [**Tile Index**](#332-tile-index).
 4. **[Block Index](#34-block-index):** Acts as a parent directory for all blocks within the file.
@@ -27,9 +28,9 @@ The Versatiles Container format consists of four main components:
 ### 3.1. File Header
 
 - **Length:** 66 bytes.
-- **Location:** At the start of the file.
+- **Position:** At the beginning of the file.
 - **Purpose:** Outlines essential file properties and indicates subsequent section locations.
-- all offsets are relative to start of the file
+- All offsets are relative to the beginning of the file.
 
 | Offset | Length |  Type  | Description                              |
 |-------:|-------:|:------:|------------------------------------------|
@@ -64,6 +65,8 @@ The Versatiles Container format consists of four main components:
 |    `0x22` |      `34` | topojson | *application/topo+json*    |
 |    `0x23` |      `35` |   json   | *application/json*         |
 
+- Values not listed above are reserved, see [General Guidelines](#2-general-guidelines).
+
 
 
 #### 3.1.2. Value `precompression`
@@ -75,6 +78,10 @@ The Versatiles Container format consists of four main components:
 | `0`   | Uncompressed |
 | `1`   | gzip         |
 | `2`   | Brotli       |
+| `3`   | Zstandard    |
+
+- Values not listed above are reserved, see [General Guidelines](#2-general-guidelines).
+- This flag applies only to the [Metadata](#32-metadata-chunk) and the [Tile Blobs](#331-tile-blobs). The [Tile Index](#332-tile-index) and the [Block Index](#34-block-index) are always Brotli compressed, regardless of this value.
 
 
 
@@ -90,7 +97,7 @@ The Versatiles Container format consists of four main components:
 ### 3.3. Blocks
 
 - **Structure:** Blocks act as aggregators for up to 256×256 tiles.
-- **Zoom Levels:** Single Blocks can span entire zoom levels (0-8). Higher zoom levels (>8) may require multiple Blocks.
+- **Zoom Levels:** Individual Blocks can span entire zoom levels (0-8). Higher zoom levels (>8) may require multiple Blocks.
 - Maximum number of Blocks per zoom level: `pow(4, max(0, level - 8))`.
 
 |         Blocks per level          |
@@ -98,7 +105,7 @@ The Versatiles Container format consists of four main components:
 | ![Level Blocks](level_blocks.svg) |
 
 - Each Block contains concatenated [Tile Blobs](#331-tile-blobs) and ends with a [Tile Index](#332-tile-index).
-- Neither the [Tile Blobs](#331-tile-blobs) in a Block nor Blocks in the file need to follow any particular order.
+- Neither the [Tile Blobs](#331-tile-blobs) in a Block nor the Blocks in the file need to follow any particular order.
 
 
 
@@ -106,20 +113,20 @@ The Versatiles Container format consists of four main components:
 
 - Tile Blobs are concatenated binary data, each containing one tile. All tiles have the same format and are pre-compressed.
 - **Format:** Each Tile Blob has the same file format, determined by the [`tile_format`](#311-value-tile_format) code in the [File Header](#31-file-header).
-- **Compression:** Each Tile Blob is compressed as specified by the [`precompression`](#312-value-precompression) flag in the [File Header](#31-file-header).
+- **Compression:** Each Tile Blob is compressed according to the [`precompression`](#312-value-precompression) flag in the [File Header](#31-file-header).
 
 
 
 #### 3.3.2. Tile Index
 
-- **Compression:** Brotli.
-- **Purpose:** Maps coordinates of tiles within a block to their respective binary position and length.
-- Tiles are ordered horizontally then vertically
+- **Compression:** Brotli, regardless of the [`precompression`](#312-value-precompression) flag.
+- **Purpose:** Maps the coordinates of tiles within a block to their respective binary position and length.
+- Tiles are ordered horizontally, then vertically
 - `index = (row - row_min) * (col_max - col_min + 1) + (col - col_min)`
 - (`col_min`, `row_min`, `col_max`, `row_max` are specified in [Block Index](#34-block-index))
-- identical [Tile Blobs](#331-tile-blobs) can be stored once and referenced multiple times to save storage space
-- if a tile does not exist, the length of Tile Blob is `0`
-- offsets of [Tile Blobs](#331-tile-blobs) are relative to the beginning of the Block. So the offset of the first Tile Blob should always be `0`.
+- Identical [Tile Blobs](#331-tile-blobs) can be stored once and referenced multiple times to save storage space.
+- If a tile does not exist, the length of the Tile Blob is `0`.
+- The offsets of [Tile Blobs](#331-tile-blobs) are relative to the beginning of the Block. So the offset of the first Tile Blob should always be `0`.
 
 | Offset | Length | Type | Description                  |
 |--------|-------:|:----:|------------------------------|
@@ -134,7 +141,7 @@ The Versatiles Container format consists of four main components:
 
 ### 3.4. Block Index
 
-- **Compression:** Brotli.
+- **Compression:** Brotli, regardless of the [`precompression`](#312-value-precompression) flag.
 - **Function:** Provides a directory for locating [Blocks](#33-blocks) within the container file.
 - Empty Blocks are not stored.
 - Each 33-byte entry within the Block Index is structured as follows:
@@ -152,7 +159,7 @@ The Versatiles Container format consists of four main components:
 | 21 + 33*i |      8 | u64  | length of [Tile Blobs](#331-tile-blobs) |
 | 29 + 33*i |      4 | u32  | length of [Tile Index](#332-tile-index) |
 
-- Since a Block consists only of [Tile Blobs](#331-tile-blobs) appended by the [Tile Index](#332-tile-index), the length of Block must be the sum of the lengths of the [Tile Blobs](#331-tile-blobs) and the [Tile Index](#332-tile-index).
+- Since a Block consists only of [Tile Blobs](#331-tile-blobs) appended by a [Tile Index](#332-tile-index), the length of Block must be the sum of the lengths of the [Tile Blobs](#331-tile-blobs) and the [Tile Index](#332-tile-index).
 - Note: To efficiently find the Block containing the tile you are looking for, use a data structure such as a "map", "dictionary" or "associative array" and fill it with the data from the Block Index.
 
 
@@ -161,5 +168,6 @@ The Versatiles Container format consists of four main components:
 
 - **Blob:** A chunk of binary data. [Object storage on Wikipedia](https://en.wikipedia.org/wiki/Object_storage)
 - **Block:** A composite unit containing up to 256×256 tiles.
-- **Brotli:** A compression algorithm known for its efficiency and performance. It offers better compression than gzip. [Brotli on Wikipedia](https://en.wikipedia.org/wiki/Brotli)
-- **Tile:** A square geographic area at a specified zoom level, containing map information as an image or as vector data.
+- **Brotli:** A compression algorithm known for its efficiency and performance. It provides better compression than gzip. [Brotli on Wikipedia](https://en.wikipedia.org/wiki/Brotli)
+- **Tile:** A square geographic area at a given zoom level containing map information as an image or as vector data.
+- **Zstandard:** A compression algorithm, commonly abbreviated as `zstd`, that reaches compression ratios comparable to Brotli at significantly higher compression and decompression speeds. [Zstandard on Wikipedia](https://en.wikipedia.org/wiki/Zstd)
