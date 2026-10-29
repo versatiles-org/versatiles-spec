@@ -181,7 +181,10 @@ The VersaTiles container format consists of four main components:
 - **Blob:** A chunk of binary data. [Object storage on Wikipedia](https://en.wikipedia.org/wiki/Object_storage)
 - **Block:** A composite unit containing up to 256×256 tiles.
 - **Brotli:** A compression algorithm known for its efficiency and performance. It provides better compression than gzip. [Brotli on Wikipedia](https://en.wikipedia.org/wiki/Brotli)
+- **gzip:** A widely supported compression algorithm based on DEFLATE. [gzip on Wikipedia](https://en.wikipedia.org/wiki/Gzip)
 - **MLT:** MapLibre Tile, a column-oriented vector tile format developed by MapLibre. [MapLibre Tile Specification](https://maplibre.org/maplibre-tile-spec/)
 - **MVT:** Mapbox Vector Tile, a Protocol Buffers based vector tile format. Formerly referred to as `pbf` in this specification. [Mapbox Vector Tile Specification](https://github.com/mapbox/vector-tile-spec)
 - **Tile:** A square geographic area at a given zoom level containing map information as an image or as vector data.
+- **TileJSON:** A JSON format describing a tileset, e.g. its zoom levels, bounding box, attribution and vector layers. [TileJSON 3.0](https://github.com/mapbox/tilejson-spec/tree/master/3.0.0)
+- **XYZ:** A tiling scheme that addresses tiles by zoom level `z`, column `x` and row `y`, with the origin at the top left (northwest) corner. [Tiled web map on Wikipedia](https://en.wikipedia.org/wiki/Tiled_web_map)
 - **Zstandard:** A compression algorithm, commonly abbreviated as `zstd`, that reaches compression ratios comparable to Brotli at significantly higher compression and decompression speeds. [Zstandard on Wikipedia](https://en.wikipedia.org/wiki/Zstd)
