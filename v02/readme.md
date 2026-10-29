@@ -92,7 +92,7 @@ The VersaTiles container format consists of four main components:
 
 ### 3.2. Metadata Chunk
 
-- **Content:** Encapsulates `tiles.json`, detailing tileset metadata.
+- **Content:** Encapsulates `tiles.json`, detailing tileset metadata, as defined by [TileJSON 3.0](https://github.com/mapbox/tilejson-spec/tree/master/3.0.0) and the [VersaTiles Extended TileJSON](https://docs.versatiles.org/compendium/specification_extended_tilejson.html) specification.
 - **Encoding:** UTF-8.
 - **Compression:** Defined by the [`precompression`](#312-value-precompression) flag in the [File Header](#31-file-header).
 - **Vector tiles:** For the vector tile formats `mvt` and `mlt`, `tiles.json` should contain `vector_layers` describing the layers of the tiles.
