@@ -55,7 +55,7 @@ The VersaTiles container format consists of four main components:
 
 #### 3.1.1. Value `tile_format`
 
-| Value hex | Value dec |   Type   | Mime                                   |
+| Value hex | Value dec |   Type   | MIME type                              |
 |----------:|----------:|:--------:|----------------------------------------|
 |    `0x00` |       `0` |   bin    | *application/octet-stream*             |
 |    `0x10` |      `16` |   png    | *image/png*                            |
