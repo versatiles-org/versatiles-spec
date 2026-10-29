@@ -8,6 +8,7 @@ This document defines the VersaTiles Container Format v2.1, which describes the 
 
 - **Byte order:** All numeric values are encoded in big-endian byte order.
 - **Tile organisation:** Tiles are organised according to the XYZ scheme, with the origin (x=0, y=0) at the top left (northwest) corner.
+- **Zoom levels:** Valid zoom levels range from `0` to `30`, in line with [TileJSON 3.0](https://github.com/mapbox/tilejson-spec/tree/master/3.0.0). This applies to the zoom levels in the [File Header](#31-file-header) and in the [Block Index](#34-block-index).
 - **Unknown values:** Values not listed in this specification are reserved for future versions. A reader encountering a reserved value must reject the container. It must not substitute a default, and it must not pass the affected data through unchanged.
 
 ## 3. File Structure
