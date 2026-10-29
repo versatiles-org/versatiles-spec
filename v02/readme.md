@@ -117,7 +117,7 @@ The VersaTiles container format consists of four main components:
 
 #### 3.3.1. Tile Blobs
 
-- Tile Blobs are concatenated binary data, each containing one tile. All tiles have the same format and are pre-compressed.
+- Tile Blobs are concatenated binary data, each containing one tile. All tiles have the same format and the same precompression.
 - **Format:** Each Tile Blob has the same file format, determined by the [`tile_format`](#311-value-tile_format) code in the [File Header](#31-file-header).
 - **Compression:** Each Tile Blob is compressed according to the [`precompression`](#312-value-precompression) flag in the [File Header](#31-file-header).
 
