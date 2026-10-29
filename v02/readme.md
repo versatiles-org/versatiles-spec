@@ -171,6 +171,7 @@ The VersaTiles container format consists of four main components:
 | 21 + 33*i |      8 | u64  | length of [Tile Blobs](#331-tile-blobs) |
 | 29 + 33*i |      4 | u32  | length of [Tile Index](#332-tile-index) |
 
+- `col_min` must be less than or equal to `col_max`, and `row_min` must be less than or equal to `row_max`. Readers must reject a Block Index entry violating this.
 - Since a Block consists only of [Tile Blobs](#331-tile-blobs) appended by a [Tile Index](#332-tile-index), the length of Block must be the sum of the lengths of the [Tile Blobs](#331-tile-blobs) and the [Tile Index](#332-tile-index).
 - Note: To efficiently find the Block containing the tile you are looking for, use a data structure such as a "map", "dictionary" or "associative array" and fill it with the data from the Block Index.
 
