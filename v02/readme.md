@@ -132,7 +132,7 @@ The VersaTiles container format consists of four main components:
 - (`col_min`, `row_min`, `col_max`, `row_max` are specified in [Block Index](#34-block-index))
 - Identical [Tile Blobs](#331-tile-blobs) can be stored once and referenced multiple times to save storage space.
 - If a tile does not exist, the length of the Tile Blob is `0`.
-- The offsets of [Tile Blobs](#331-tile-blobs) are relative to the beginning of the Block. So the offset of the first Tile Blob should always be `0`.
+- The offsets of [Tile Blobs](#331-tile-blobs) are relative to the beginning of the Block. Since the Tile Blobs start at the beginning of the Block, the smallest offset should always be `0`, regardless of the order of the entries in the Tile Index.
 
 | Offset | Length | Type | Description                  |
 |--------|-------:|:----:|------------------------------|
