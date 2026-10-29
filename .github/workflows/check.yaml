@@ -15,3 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@main
     - uses: michaelkreil/check-markdown-links@main
+      with:
+        # npmjs.com answers automated requests with 403
+        skip_hosts: |
+          www.npmjs.com
