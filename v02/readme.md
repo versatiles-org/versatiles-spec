@@ -1,8 +1,8 @@
-# VersaTiles Container Format Specification v2.0
+# VersaTiles Container Format Specification v2.1
 
 ## 1. Introduction
 
-This document defines the VersaTiles Container Format v2.0, which describes the structure and encoding mechanisms for efficiently storing large numbers of map tiles.
+This document defines the VersaTiles Container Format v2.1, which describes the structure and encoding mechanisms for efficiently storing large numbers of map tiles.
 
 ## 2. General Guidelines
 
@@ -52,20 +52,24 @@ The VersaTiles container format consists of four main components:
 
 #### 3.1.1. Value `tile_format`
 
-| Value hex | Value dec |   Type   | Mime                       |
-|----------:|----------:|:--------:|----------------------------|
-|    `0x00` |       `0` |   bin    | *application/octet-stream* |
-|    `0x10` |      `16` |   png    | *image/png*                |
-|    `0x11` |      `17` |   jpg    | *image/jpeg*               |
-|    `0x12` |      `18` |   webp   | *image/webp*               |
-|    `0x13` |      `19` |   avif   | *image/avif*               |
-|    `0x14` |      `20` |   svg    | *image/svg+xml*            |
-|    `0x20` |      `32` |   pbf    | *application/x-protobuf*   |
-|    `0x21` |      `33` | geojson  | *application/geo+json*     |
-|    `0x22` |      `34` | topojson | *application/topo+json*    |
-|    `0x23` |      `35` |   json   | *application/json*         |
+| Value hex | Value dec |   Type   | Mime                                   |
+|----------:|----------:|:--------:|----------------------------------------|
+|    `0x00` |       `0` |   bin    | *application/octet-stream*             |
+|    `0x10` |      `16` |   png    | *image/png*                            |
+|    `0x11` |      `17` |   jpg    | *image/jpeg*                           |
+|    `0x12` |      `18` |   webp   | *image/webp*                           |
+|    `0x13` |      `19` |   avif   | *image/avif*                           |
+|    `0x14` |      `20` |   svg    | *image/svg+xml*                        |
+|    `0x20` |      `32` |   mvt    | *application/vnd.mapbox-vector-tile*   |
+|    `0x21` |      `33` | geojson  | *application/geo+json*                 |
+|    `0x22` |      `34` | topojson | *application/topo+json*                |
+|    `0x23` |      `35` |   json   | *application/json*                     |
+|    `0x24` |      `36` |   mlt    | *application/vnd.maplibre-vector-tile* |
 
 - Values not listed above are reserved, see [General Guidelines](#2-general-guidelines).
+- `0x20` ([MVT](#4-glossary)) was named `pbf` with the MIME type *application/x-protobuf* in earlier versions of this specification. The value itself is unchanged. Implementations should accept `pbf` as an alias for `mvt`.
+- `0x24` ([MLT](#4-glossary)): MapLibre has not registered a media type for MLT yet. *application/vnd.maplibre-vector-tile* is the type used by existing tools and may change if an official type is registered.
+- An MLT tile may contain layers of different MLT format versions. The `tile_format` value does not distinguish between them; readers must handle MLT versioning as defined by the MLT specification.
 
 
 
@@ -81,6 +85,7 @@ The VersaTiles container format consists of four main components:
 | `3`   | Zstandard    |
 
 - Values not listed above are reserved, see [General Guidelines](#2-general-guidelines).
+- The `precompression` value is independent of the `tile_format`. This includes formats with internal compression such as MLT, where uncompressed storage (`0`) is valid but an additional precompression usually still reduces the size.
 - This flag applies only to the [Metadata](#32-metadata-chunk) and the [Tile Blobs](#331-tile-blobs). The [Tile Index](#332-tile-index) and the [Block Index](#34-block-index) are always Brotli compressed, regardless of this value.
 
 
@@ -90,6 +95,7 @@ The VersaTiles container format consists of four main components:
 - **Content:** Encapsulates `tiles.json`, detailing tileset metadata.
 - **Encoding:** UTF-8.
 - **Compression:** Defined by the [`precompression`](#312-value-precompression) flag in the [File Header](#31-file-header).
+- **Vector tiles:** For the vector tile formats `mvt` and `mlt`, `tiles.json` should contain `vector_layers` describing the layers of the tiles.
 - **Note:** The absence of Metadata is indicated by zero offsets and lengths in the [File Header](#31-file-header).
 
 
@@ -169,5 +175,7 @@ The VersaTiles container format consists of four main components:
 - **Blob:** A chunk of binary data. [Object storage on Wikipedia](https://en.wikipedia.org/wiki/Object_storage)
 - **Block:** A composite unit containing up to 256×256 tiles.
 - **Brotli:** A compression algorithm known for its efficiency and performance. It provides better compression than gzip. [Brotli on Wikipedia](https://en.wikipedia.org/wiki/Brotli)
+- **MLT:** MapLibre Tile, a column-oriented vector tile format developed by MapLibre. [MapLibre Tile Specification](https://maplibre.org/maplibre-tile-spec/)
+- **MVT:** Mapbox Vector Tile, a Protocol Buffers based vector tile format. Formerly referred to as `pbf` in this specification. [Mapbox Vector Tile Specification](https://github.com/mapbox/vector-tile-spec)
 - **Tile:** A square geographic area at a given zoom level containing map information as an image or as vector data.
 - **Zstandard:** A compression algorithm, commonly abbreviated as `zstd`, that reaches compression ratios comparable to Brotli at significantly higher compression and decompression speeds. [Zstandard on Wikipedia](https://en.wikipedia.org/wiki/Zstd)
