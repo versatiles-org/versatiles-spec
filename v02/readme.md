@@ -64,11 +64,11 @@ The VersaTiles container format consists of four main components:
 |    `0x21` |      `33` | geojson  | *application/geo+json*                 |
 |    `0x22` |      `34` | topojson | *application/topo+json*                |
 |    `0x23` |      `35` |   json   | *application/json*                     |
-|    `0x24` |      `36` |   mlt    | *application/vnd.maplibre-vector-tile* |
+|    `0x24` |      `36` |   mlt    | *application/vnd.maplibre-tile*        |
 
 - Values not listed above are reserved, see [General Guidelines](#2-general-guidelines).
 - `0x20` ([MVT](#4-glossary)) was named `pbf` with the MIME type *application/x-protobuf* in earlier versions of this specification. The value itself is unchanged. Implementations should accept `pbf` as an alias for `mvt`.
-- `0x24` ([MLT](#4-glossary)): MapLibre has not registered a media type for MLT yet. *application/vnd.maplibre-vector-tile* is the type used by existing tools and may change if an official type is registered.
+- `0x24` ([MLT](#4-glossary)): MapLibre has not registered a media type for MLT yet. *application/vnd.maplibre-tile* is the type used by MapLibre tools and may change if an official type is registered. Some tools use the older *application/vnd.maplibre-vector-tile*.
 - An MLT tile may contain layers of different MLT format versions. The `tile_format` value does not distinguish between them; readers must handle MLT versioning as defined by the MLT specification.
 
 
