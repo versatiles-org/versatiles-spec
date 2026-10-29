@@ -33,6 +33,7 @@ The VersaTiles container format consists of four main components:
 - **Purpose:** Outlines essential file properties and indicates subsequent section locations.
 - All offsets are relative to the beginning of the file.
 - The minimum zoom level must be less than or equal to the maximum zoom level.
+- The bounding box values must lie within `-180` to `180` degrees longitude and `-90` to `90` degrees latitude. The minimum must be less than or equal to the maximum for both axes, so bounding boxes crossing the antimeridian are not supported. A tileset that crosses the antimeridian should use the full longitude range (`-180` to `180`).
 
 | Offset | Length |  Type  | Description                              |
 |-------:|-------:|:------:|------------------------------------------|
