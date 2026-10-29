@@ -31,6 +31,7 @@ The VersaTiles container format consists of four main components:
 - **Position:** At the beginning of the file.
 - **Purpose:** Outlines essential file properties and indicates subsequent section locations.
 - All offsets are relative to the beginning of the file.
+- The minimum zoom level must be less than or equal to the maximum zoom level.
 
 | Offset | Length |  Type  | Description                              |
 |-------:|-------:|:------:|------------------------------------------|
