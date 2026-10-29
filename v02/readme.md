@@ -155,6 +155,7 @@ The VersaTiles container format consists of four main components:
 - **Compression:** Brotli, regardless of the [`precompression`](#312-value-precompression) flag.
 - **Function:** Provides a directory for locating [Blocks](#33-blocks) within the container file.
 - Empty Blocks are not stored.
+- Each Block, identified by `level`, `column` and `row`, must appear at most once in the Block Index. Readers should reject a Block Index containing duplicate entries.
 - Each 33-byte entry within the Block Index is structured as follows:
 
 |    Offset | Length | Type | Description                             |
