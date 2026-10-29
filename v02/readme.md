@@ -127,11 +127,13 @@ The VersaTiles container format consists of four main components:
 
 - **Compression:** Brotli, regardless of the [`precompression`](#312-value-precompression) flag.
 - **Purpose:** Maps the coordinates of tiles within a block to their respective binary position and length.
+- **Position:** The Tile Index directly follows the [Tile Blobs](#331-tile-blobs), i.e. it starts at the offset of the Block plus the length of the Tile Blobs (both specified in [Block Index](#34-block-index)).
+- **Entries:** After decompression, the Tile Index contains exactly `(col_max - col_min + 1) * (row_max - row_min + 1)` entries of 12 bytes each.
 - Tiles are ordered horizontally, then vertically
 - `index = (row - row_min) * (col_max - col_min + 1) + (col - col_min)`
 - (`col_min`, `row_min`, `col_max`, `row_max` are specified in [Block Index](#34-block-index))
 - Identical [Tile Blobs](#331-tile-blobs) can be stored once and referenced multiple times to save storage space.
-- If a tile does not exist, the length of the Tile Blob is `0`.
+- If a tile does not exist, the length of the Tile Blob is `0`. Writers should set its offset to `0` as well; readers must ignore the offset of entries with length `0`.
 - The offsets of [Tile Blobs](#331-tile-blobs) are relative to the beginning of the Block. Since the Tile Blobs start at the beginning of the Block, the smallest offset should always be `0`, regardless of the order of the entries in the Tile Index.
 
 | Offset | Length | Type | Description                  |
